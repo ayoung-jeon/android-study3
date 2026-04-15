@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.aystudy.airquality"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.aystudy.airquality"

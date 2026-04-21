@@ -73,10 +73,10 @@ class LocationProvider(val context: Context) {
     }
 
     //Location 기반으로 위도와 경도 가져오기
-    fun getLocationLatitude() : Double {
-        return location?.latitude ?: 0.0
+    fun getLocationLatitude() : Double? {
+        return location?.latitude
     }
-    fun getLocationLongitude() : Double {
-        return location?.longitude ?: 0.0
+    fun getLocationLongitude() : Double? {
+        return location?.longitude
     }
 }

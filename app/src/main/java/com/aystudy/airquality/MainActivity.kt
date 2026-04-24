@@ -20,6 +20,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.DatePickerFormatter
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Applier
@@ -30,8 +31,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.aystudy.airquality.databinding.ActivityMainBinding
+import com.aystudy.airquality.retrofit.AirQualityResponse
+import com.aystudy.airquality.retrofit.AirQualityService
+import com.aystudy.airquality.retrofit.RetrofitConnection
 import com.aystudy.airquality.ui.theme.AirQualityTheme
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
 import java.io.IOException
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
@@ -55,6 +66,7 @@ class MainActivity : AppCompatActivity() {
 
         checkAllPermissions()
         updateUI()
+        setRefreshButton()
     }
 
     private fun updateUI() {
@@ -73,8 +85,89 @@ class MainActivity : AppCompatActivity() {
             }
 
             // 2. 미세먼지 농도 가져오고 UI 업데이트
+            getAirQualityData(latitude, longitude)
+
         } else {
             Toast.makeText(this, "위도, 경도 정보를 가져올 수 없습니다.", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun getAirQualityData(latitude: Double, longitude: Double) {
+        var retrofitAPI = RetrofitConnection.getInstance().create(
+            AirQualityService::class.java
+        )
+
+        retrofitAPI.getAirQualityData(
+            latitude.toString(),
+            longitude.toString(),
+            "{내꺼 AirVisual API}"
+        ).enqueue( object : Callback<AirQualityResponse> {
+            override fun onResponse(
+                call: Call<AirQualityResponse>,
+                response: Response<AirQualityResponse>
+            ) {
+                if (response.isSuccessful) {
+                    Toast.makeText(
+                        this@MainActivity, "최신 데이터 업데이트 완료", Toast.LENGTH_LONG
+                    ).show()
+                    response.body()?.let { updateAirUI(it) }
+                } else {
+                    Toast.makeText(
+                        this@MainActivity, "데이터를 가져오는 데 실패했습니다.", Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<AirQualityResponse>, t: Throwable) {
+                t.printStackTrace()
+                Toast.makeText(
+                    this@MainActivity, "데이터를 가져오는 데 실패했습니다.", Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+
+        )
+    }
+
+    private fun updateAirUI(airQualityData: AirQualityResponse) {
+        val pollutionData = airQualityData.data.current.pollution
+
+        // 수치를 지정
+        binding.tvCount.text = pollutionData.aqius.toString()
+
+        // 측정된 날짜
+        val dateTime = ZonedDateTime.parse(pollutionData.ts).withZoneSameInstant(ZoneId.of("Asia/seoul")).toLocalDateTime()
+        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+
+        binding.tvCheckTime.text = dateTime.format(dateFormatter).toString()
+
+        // 농도 측정
+        when(pollutionData.aqius) {
+            in 0..50 -> {
+                binding.tvTitle.text = "좋음"
+                binding.imgBg.setImageResource(R.drawable.bg_good)
+            }
+
+            in 51..150 -> {
+                binding.tvTitle.text = "보통"
+                binding.imgBg.setImageResource(R.drawable.bg_soso)
+            }
+
+            in 151..200 -> {
+                binding.tvTitle.text = "나쁨"
+                binding.imgBg.setImageResource(R.drawable.bg_bad)
+            }
+
+            else -> {
+                binding.tvTitle.text = "매우 나쁨"
+                binding.imgBg.setImageResource(R.drawable.bg_worst)
+            }
+        }
+    }
+
+    private fun setRefreshButton() {
+        binding.btnRefresh.setOnClickListener {
+            updateUI()
         }
     }
 

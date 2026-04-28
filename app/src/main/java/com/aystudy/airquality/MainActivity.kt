@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity() {
         retrofitAPI.getAirQualityData(
             latitude.toString(),
             longitude.toString(),
-            "{내꺼 AirVisual API}"
+            "내꺼 AirVisual API"
         ).enqueue( object : Callback<AirQualityResponse> {
             override fun onResponse(
                 call: Call<AirQualityResponse>,

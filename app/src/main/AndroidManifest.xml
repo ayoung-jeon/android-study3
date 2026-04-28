@@ -16,6 +16,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AirQuality"
         tools:targetApi="31">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="내 구글 맵 API_KEY 넣기"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

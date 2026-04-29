@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     // Material Components - XML View용 FAB
     implementation("com.google.android.material:material:1.12.0")
+    implementation(libs.androidx.activity)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

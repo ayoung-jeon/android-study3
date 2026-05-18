@@ -11,37 +11,21 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.registerForActivityResult
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.DatePickerFormatter
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Applier
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontVariation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.aystudy.airquality.databinding.ActivityMainBinding
 import com.aystudy.airquality.retrofit.AirQualityResponse
 import com.aystudy.airquality.retrofit.AirQualityService
 import com.aystudy.airquality.retrofit.RetrofitConnection
-import com.aystudy.airquality.ui.theme.AirQualityTheme
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
 import java.io.IOException
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -197,7 +181,7 @@ class MainActivity : AppCompatActivity() {
         binding.fab.setOnClickListener {
             val intent = Intent(this, MapActivity::class.java)
             intent.putExtra("currentLat", latitude)
-            intent.putExtra("currentLon", longitude)
+            intent.putExtra("currentLng", longitude)
             startActivityForResult.launch(intent)
         }
     }
